@@ -2,6 +2,8 @@
 # Ustawia statyczny adres IP 192.168.0.50/24 na pierwszym wykrytym interfejsie sieciowym
 # (z pominięciem lo). Wymagany Ubuntu 17.10+ (netplan).
 
+
+
 set -euo pipefail
 
 echo "Rozpoczynam konfigurację statycznego adresu IP..."
@@ -16,6 +18,14 @@ if [[ -z "$IFACE" ]]; then
 fi
 
 echo "Znaleziono interfejs: $IFACE"
+
+# Utwórz kopię zapasową bieżących ustawień sieci
+echo "Tworzenie kopii zapasowej bieżących ustawień sieci..."
+BACKUP_DIR="/etc/netplan/backup"
+sudo mkdir -p "$BACKUP_DIR"
+TIMESTAMP=$(date +%Y%m%d%H%M%S)
+sudo cp /etc/netplan/*.yaml "$BACKUP_DIR/netplan-backup-$TIMESTAMP.yaml" 2>/dev/null || echo "Brak istniejących plików Netplan do skopiowania."
+echo "Kopia zapasowa została zapisana w $BACKUP_DIR jako netplan-backup-$TIMESTAMP.yaml"
 
 # Utwórz/aktualizuj plik Netplan
 echo "Tworzenie/aktualizacja pliku Netplan..."
